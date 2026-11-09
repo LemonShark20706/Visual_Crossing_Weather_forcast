@@ -1,4 +1,5 @@
 import os
+import dataclasses
 from dotenv import load_dotenv
 
 class Env_Loader:
@@ -32,4 +33,17 @@ class Env_Loader:
         else:
             raise KeyError(f"A(z) {key} környezeti változó nem található.")
 
-__all__ = ["Env_Loader"]
+@dataclasses.dataclass
+class Loaded_Env_Variables:
+    api_key: str
+    base_url: str
+
+    @classmethod
+    def from_env_loader(cls, env_loader: Env_Loader):
+        api_key = env_loader.get_env_variable("API_KEY")
+        base_url = env_loader.get_env_variable("BASE_URL")
+        if not api_key or not base_url:
+            raise SystemExit("Az API_KEY vagy BASE_URL környezeti változó hiányzik.")
+        return cls(api_key=api_key, base_url=base_url)
+
+__all__ = ["Env_Loader", "Loaded_Env_Variables"]
